@@ -11,6 +11,10 @@ type User struct {
 	Address string `form:"address"`
 }
 
+type Group struct {
+	Groups []string `form:"group"`
+}
+
 func main() {
 	r := gin.Default()
 	// gin 框架分组路由测试
@@ -60,6 +64,16 @@ func main() {
 			log.Println(err)
 		}
 		ctx.JSON(200, user)
+	})
+
+	// 数组参数获取
+	r.GET("/user/array", func(ctx *gin.Context) {
+		var group Group
+		err := ctx.ShouldBind(&group)
+		if err != nil {
+			log.Println(err)
+		}
+		ctx.JSON(200, group)
 	})
 
 	err := r.Run(":9090")
