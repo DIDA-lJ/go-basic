@@ -95,10 +95,20 @@ func main() {
 		ctx.JSON(200, mapTest)
 	})
 
-	// Post 获取参数
+	// Post 获取参数 （表单）
 	r.POST("/user/login", func(ctx *gin.Context) {
 		var loginUser LoginUser
 		err := ctx.ShouldBind(&loginUser)
+		if err != nil {
+			log.Println(err)
+		}
+		ctx.JSON(200, gin.H{"code": "200", "account": loginUser.Account, "password": loginUser.Password})
+	})
+
+	// Post 获取参数 （Json）
+	r.POST("/user/loginJson", func(ctx *gin.Context) {
+		var loginUser LoginUser
+		err := ctx.ShouldBindJSON(&loginUser)
 		if err != nil {
 			log.Println(err)
 		}
