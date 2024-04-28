@@ -15,6 +15,10 @@ type Group struct {
 	Groups []string `form:"group"`
 }
 
+type MapTest struct {
+	AddressMap map[string]string `form:"addressMap"`
+}
+
 func main() {
 	r := gin.Default()
 	// gin 框架分组路由测试
@@ -75,7 +79,16 @@ func main() {
 		}
 		ctx.JSON(200, group)
 	})
-
+	// map 类型参数
+	r.GET("/user/map", func(ctx *gin.Context) {
+		var mapTest MapTest
+		err := ctx.ShouldBind(&mapTest)
+		if err != nil {
+			log.Println(err)
+		}
+		mapTest.AddressMap = ctx.QueryMap("addressMap")
+		ctx.JSON(200, mapTest)
+	})
 	err := r.Run(":9090")
 	if err != nil {
 		log.Println(err)
