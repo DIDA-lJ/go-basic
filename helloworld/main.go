@@ -19,6 +19,11 @@ type MapTest struct {
 	AddressMap map[string]string `form:"addressMap"`
 }
 
+type LoginUser struct {
+	Account  string `form:"account"`
+	Password string `form:"password"`
+}
+
 func main() {
 	r := gin.Default()
 	// gin 框架分组路由测试
@@ -45,7 +50,7 @@ func main() {
 			})
 		})
 	}
-	// 获取普通参数,获取方法 1，直接获取
+	// Get 获取普通参数,获取方法 1，直接获取
 	r.GET("/user/save", func(ctx *gin.Context) {
 		id := ctx.Query("id")
 		name := ctx.Query("name")
@@ -59,7 +64,7 @@ func main() {
 		})
 	})
 
-	// 获取普通参数,获取方法 2 ，对象获取
+	// Get 获取普通参数,获取方法 2 ，对象获取
 	r.GET("/user/test", func(ctx *gin.Context) {
 		var user User
 		// BindQuery 返回的是一个列表参数
@@ -70,7 +75,7 @@ func main() {
 		ctx.JSON(200, user)
 	})
 
-	// 数组参数获取
+	// Get 数组参数获取
 	r.GET("/user/array", func(ctx *gin.Context) {
 		var group Group
 		err := ctx.ShouldBind(&group)
@@ -79,7 +84,7 @@ func main() {
 		}
 		ctx.JSON(200, group)
 	})
-	// map 类型参数
+	// Get map 类型参数
 	r.GET("/user/map", func(ctx *gin.Context) {
 		var mapTest MapTest
 		err := ctx.ShouldBind(&mapTest)
@@ -88,6 +93,16 @@ func main() {
 		}
 		mapTest.AddressMap = ctx.QueryMap("addressMap")
 		ctx.JSON(200, mapTest)
+	})
+
+	// Post 获取参数
+	r.POST("/user/login", func(ctx *gin.Context) {
+		var loginUser LoginUser
+		err := ctx.ShouldBind(&loginUser)
+		if err != nil {
+			log.Println(err)
+		}
+		ctx.JSON(200, gin.H{"code": "200", "account": loginUser.Account, "password": loginUser.Password})
 	})
 	err := r.Run(":9090")
 	if err != nil {
