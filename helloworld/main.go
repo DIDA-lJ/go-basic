@@ -20,8 +20,9 @@ type MapTest struct {
 }
 
 type LoginUser struct {
-	Account  string `form:"account"`
-	Password string `form:"password"`
+	Account   string `json:"account"`
+	Password  string `json:"password"`
+	CheckCode string `json:"checkcode"`
 }
 
 func main() {
@@ -112,10 +113,35 @@ func main() {
 		if err != nil {
 			log.Println(err)
 		}
-		ctx.JSON(200, gin.H{"code": "200", "account": loginUser.Account, "password": loginUser.Password})
+		ctx.JSON(200, gin.H{"code": "200", "account": loginUser.Account, "password": loginUser.Password, "checkcode": loginUser.CheckCode})
 	})
+
+	// Post 路径参数(路径参数测试)
+	r.POST("/user/urlTest/:id/:name", func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		name := ctx.Param("name")
+		ctx.JSON(200, gin.H{"id": id, "name": name})
+	})
+
+	// Post 文件参数获取,文件上传测试
+	r.POST("/user/fileTest", func(ctx *gin.Context) {
+		form, err := ctx.MultipartForm()
+		if err != nil {
+			log.Println(err)
+		}
+		value := form.Value
+		files := form.File
+		for _, fileArray := range files {
+			for _, v := range fileArray {
+				ctx.SaveUploadedFile(v, "./"+v.Filename)
+			}
+		}
+		ctx.JSON(200, value)
+	})
+
 	err := r.Run(":9090")
 	if err != nil {
 		log.Println(err)
 	}
+
 }
